@@ -28,6 +28,7 @@ export const VideoCard = ({ video, isFavorite, onToggleFavorite }: VideoCardProp
                     <CardMedia
                         component="img"
                         height="180"
+                        loading="lazy"
                         image={video.snippet.thumbnails.high?.url || video.snippet.thumbnails.medium.url}
                         alt="thumbnail"
                         sx={{ borderRadius: 1 }}
