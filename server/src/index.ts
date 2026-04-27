@@ -25,16 +25,23 @@ dotenv.config();
 connectDB();
 // CREATE EXPRESS APP
 const app = express();
+// START SERVER WITH CORS ALLOWED FROM FRONTEND
+app.use(cors({
+    origin: 'https://innovatube-app.onrender.com',
+    credentials: true
+}));
 // PARSE JSON BODIES (FROM FRONTEND)
 app.use(express.json());
+
 // ROUTES
 app.get('/', (req, res) => { res.send("[ ✅ SUCESS ]: Welcome to Innovatube API !!!"); });
 // USE CUSTOM ROUTES
 app.use('/api/auth', authRoutes);
 app.use('/api/videos', videoRoutes);
 app.use('/api/favorites', favoriteRoutes);
-// START SERVER WITH CORS ALLOWED FROM FRONTEND
-app.use(cors({
-    origin: 'https://innovatube-app.onrender.com',
-    credentials: true
-}));
+
+const PORT = process.env.PORT || 4000;
+app.listen(PORT, () => {
+    console.log(`[ ✅ SUCCESS ]: Server is running on port ${PORT}`);
+    console.log(`[ ✅ SUCCESS ]: Server is running on https://innovatube-app.onrender.com`);
+});
