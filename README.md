@@ -1,6 +1,8 @@
 # innovatube-app
 
-# InnovaTube
+> **Links del Proyecto:**
+> - 🌐 **Demo en Vivo:** [https://tu-frontend.onrender.com](https://tu-frontend.onrender.com)
+> - ⚙️ **API Endpoint:** [https://tu-backend.onrender.com](https://tu-backend.onrender.com)
 
 InnovaTube es una aplicación web full-stack diseñada para explorar y gestionar videos de YouTube en una interfaz moderna y personalizada. Este proyecto fue desarrollado como parte de una prueba técnica, integrando soluciones de terceros y mejores prácticas de seguridad.
 
@@ -64,7 +66,8 @@ InnovaTube es una aplicación web full-stack diseñada para explorar y gestionar
    VITE_API_URL=tu_url_del_backend
    VITE_RECAPTCHA_SITE_KEY=tu_recaptcha_site
    ```
-4. Inicia la aplicación: `npm run dev`
+4. Inicia el servidor de desarrollo: `npm run dev`
+5. Construir para producción: `npm run build`
 
 ## Seguridad Implementada
 - **Protección de Rutas**: Middleware en el frontend que verifica la existencia de tokens válidos antes de permitir el acceso al /home.
@@ -87,6 +90,6 @@ El proyecto sigue una estructura modular para facilitar la escalabilidad:
 - `VideoCard`: Componente reutilizable con lógica interna de favoritos y redirección externa.
 
 ## Autor
-- Mónica Guzmán Molina - Software Developer
-
-- LinkedIn | GitHub
+- **Mónica Guzmán Molina** - *Software Developer*
+- 🔗 [LinkedIn](www.linkedin.com/in/m0nigumol)
+- 🐙 [GitHub](https://github.com/m0nigumol)
