@@ -40,8 +40,8 @@ InnovaTube es una aplicación web full-stack diseñada para explorar y gestionar
 
 ### Prerrequisitos
 - Node.js (v16 o superior)
-- Cuenta en Google Cloud Console (para YouTube API y reCAPTCHA).
 - Instancia de MongoDB (Local o Atlas).
+- Cuenta en Google Cloud Console (para YouTube API y reCAPTCHA).
 
 ### Backend
 1. Navega a la carpeta del servidor: `cd server`
