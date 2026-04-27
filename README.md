@@ -1,4 +1,4 @@
-# innovatube-app
+# InnovaTube
 
 > **Links del Proyecto:**
 > - 🌐 **Demo en Vivo:** [https://tu-frontend.onrender.com](https://tu-frontend.onrender.com)
