@@ -17,6 +17,7 @@ import connectDB from "./db";
 // IMPORT ROUTES
 import authRoutes from "./routes/authRoutes";
 import videoRoutes from "./routes/videoRoutes";
+import favoriteRoutes from "./routes/favoriteRoutes";
 
 // LOAD ENV VARIABLES
 dotenv.config();
@@ -39,6 +40,7 @@ app.get('/', (req, res) => {
 // USE CUSTOM ROUTES
 app.use('/api/auth', authRoutes);
 app.use('/api/videos', videoRoutes);
+app.use('/api/favorites', favoriteRoutes);
 
 
 // INITIALIZE SERVER
