@@ -1,33 +1,28 @@
+/* 
+    THIS FILE CONTAINS THE SCHEMA FOR THE USER MODEL
+    IT ALLOWS US TO CREATE A USER DOCUMENT IN THE DB
+    WITH THE FOLLOWING FIELDS, SPECIFIC TYPES, AND DEFAULT VALUES
+*/
+
 import { Schema, model } from 'mongoose';
 
 const UserSchema = new Schema({
+    // NOMBRE
     firstName: { type: String, required: true },
+    // APELLIDO
     lastName: { type: String, required: true },
+    // USERNAME
     username: { type: String, required: true, unique: true },
+    // EMAIL
     email: { type: String, required: true, unique: true },
+    // PASSWORD
     password: { type: String, required: true },
-    favorites: [{ type: String }]
+    // FAVORITES LIST
+    favorites: {
+        // SAVE VIDEO OBJECT FROM YOUTUBE
+        type: [Object],
+        default: []
+    }
 });
 
 export default model('User', UserSchema);
-
-/* 
-    FOR THE TEST THE USER SHOULD CONTAIN AT LEAST THE FOLLOWING FIELDS:
-    - NAME
-    - LASTNAME
-    - USERNAME
-    - EMAIL
-    - PASSWORD
-    - FAVORITES (ARRAY OF VIDEO IDS)
- */
-
-/* JSON EXAMPLE FOR TESTING PURPOSES
-{
-    "firstName": "",
-    "lastName": "",
-    "username": "",
-    "email": "",
-    "password": "",
-    "favorites": ""
-} 
-*/
