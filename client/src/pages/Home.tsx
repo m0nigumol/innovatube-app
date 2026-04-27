@@ -5,13 +5,12 @@ ALL THE VIDEOS AND FAVORITES ARE FETCHED FROM THE BACKEND
  */
 
 import { useState, useEffect } from 'react';
+import { Grid, Box } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import {
-    Container, Typography, TextField, Button, Grid, Card, CardMedia,
-    CardContent, IconButton, Box, AppBar, Toolbar, Tabs, Tab, CardActions
-} from '@mui/material';
-import { Logout, Favorite, FavoriteBorder, PlayArrow, Clear } from '@mui/icons-material';
 import api from '../services/api';
+import { Navbar } from '../components/NavBar';
+import { SearchBar } from '../components/SearchBar';
+import { VideoCard } from '../components/VideoCard';
 
 const Home = () => {
     // HOOKS DECLARATION
@@ -23,242 +22,105 @@ const Home = () => {
     const [videos, setVideos] = useState([]);
     const [favorites, setFavorites] = useState([]);
     const [favQuery, setFavQuery] = useState('');
-
-    // FUNCTIONS DECLARATION
+    // EFFECT DECLARATION
     useEffect(() => {
         fetchFavorites();
         fetchInitialVideos();
     }, []);
-    // LOGOUT FUNCTION
+
+    // FUNCTION DECLARATION
+    // INITIAL FETCH
+    const fetchInitialVideos = async () => {
+        const { data } = await api.get('/videos/load');
+        setVideos(data.items.map((v: any) => ({ ...v, id: { videoId: v.id } })));
+    };
+    // HANDLE SEARCH (FOR POPULAR VIDEOS TAB)
+    const handleSearch = async () => {
+        if (!query) return;
+        const { data } = await api.get(`/videos/search?q=${query}`);
+        setVideos(data.items);
+    };
+    // FETCH FAVORITES PER USER FROM BACKEND
+    const fetchFavorites = async () => {
+        const { data } = await api.get('/favorites');
+        setFavorites(data);
+    };
+    // HANDLE TOGGLE FAVORITE (ADD OR REMOVE FROM FAVORITES) IN BACKEND
+    const toggleFavorite = async (video: any) => {
+        // GET VIDEO ID
+        const videoId = video._id || video.id?.videoId || video.id;
+        // CHECK IF VIDEO IS ALREADY IN FAVORITES
+        const isFav = favorites.some((f: any) => (f._id || f.id?.videoId || f.id) === videoId);
+        try {
+            // IF VIDEO IS ALREADY IN FAVORITES, REMOVE IT
+            if (isFav) {
+                await api.delete(`/favorites/${videoId}`);
+            }
+            // IF VIDEO IS NOT IN FAVORITES, ADD IT
+            else {
+                await api.post('/favorites', video);
+            }
+            // REFRESH FAVORITES LIST
+            fetchFavorites();
+        } catch (error) {
+            alert("Error al actualizar favoritos");
+        }
+    };
+    // HANDLE LOGOUT
     const handleLogout = () => {
-        // REMOVE TOKEN AND USERNAME FROM LOCAL STORAGE
+        // REMOVE TOKEN AND USER FROM LOCAL STORAGE
         localStorage.removeItem('token');
-        localStorage.removeItem('username');
+        localStorage.clear();
         // NAVIGATE TO LOGIN
         navigate('/login');
     };
 
-    // POPULAR VIDEOS FUNCTION
-    const fetchInitialVideos = async () => {
-        try {
-            // FETCH VIDEOS
-            const { data } = await api.get('/videos/load');
-            // NORMALIZE VIDEOS
-            const normalizedVideos = data.items.map((v: any) => ({
-                ...v,
-                id: { videoId: v.id }
-            }));
-            // SET VIDEOS CONTENT FROM BACKEND
-            setVideos(normalizedVideos);
-        } catch (error) {
-            console.error("Error cargando videos iniciales", error);
-        }
-    };
-
-    // SEARCH FUNCTION
-    const handleSearch = async () => {
-        // IF QUERY IS EMPTY, RETURN
-        if (!query) return;
-
-        try {
-            // FETCH VIDEOS FROM BACKEND WITH QUERY
-            const { data } = await api.get(`/videos/search?q=${query}`);
-            // SET VIDEO DATA FROM BACKEND
-            setVideos(data.items);
-        } catch (error) {
-            alert("Error al buscar videos. Por favor, intenta de nuevo.");
-        }
-    };
-
-
-    // FAVORITES FUNCTION'S
-    // FETCH FAVORITES
-    const fetchFavorites = async () => {
-        try {
-            // FETCH FAVORITES
-            const { data } = await api.get('/favorites');
-            // SET FAVORITE DATA FROM BACKEND
-            setFavorites(data);
-        } catch (error) {
-            console.error("Error cargando favoritos", error);
-        }
-    };
-    // ADD VIDEO TO FAVORITES
-    const addToFavorites = async (video: any) => {
-        try {
-            await api.post('/favorites', video);
-            // REFRESH FAVORITES AFTER ADDING A VIDEO
-            await fetchFavorites();
-            alert('Añadido a favoritos');
-        } catch (error) {
-            alert('Error al añadir a favoritos');
-        }
-    };
-    // REMOVE VIDEO FROM FAVORITES
-    const removeFromFavorites = async (id: string) => {
-        try {
-            // DELETE FAVORITE
-            await api.delete(`/favorites/${id}`);
-            // SHOW SUCCESS MESSAGE
-            alert('Eliminado de favoritos');
-            // REFRESH FAVORITES AFTER DELETE
-            fetchFavorites();
-        } catch (error) {
-            console.error("Error al eliminar", error);
-            alert('Error al eliminar');
-        }
-    };
-    // FILTER FAVORITES BY QUERY
-    const filteredFavorites = favorites.filter((v: any) =>
-        v.snippet.title.toLowerCase().includes(favQuery.toLowerCase())
-    );
     return (
         <>
-            <AppBar position="sticky" sx={{ bgcolor: 'white', color: 'black' }}>
-                <Toolbar sx={{ justifyContent: 'space-between' }}>
-                    <Typography variant="h6" sx={{ fontWeight: 'bold', color: 'primary.main' }}>
-                        InnovaTube
-                    </Typography>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <Typography variant="body2">Hola, <b>{username}</b></Typography>
-                        <IconButton color="error" onClick={handleLogout}><Logout /></IconButton>
-                    </Box>
-                </Toolbar>
-                <Tabs value={tabValue} onChange={(_, n) => setTabValue(n)} centered>
-                    <Tab label="Explorar" />
-                    <Tab label="Favoritos" />
-                </Tabs>
-            </AppBar>
-
-            <Container sx={{ mt: 4, pb: 4 }}>
-                {tabValue === 0 ? (
-                    // POPULAR VIDEOS
-                    <Box>
-                        <Box sx={{ display: 'flex', gap: 1, mb: 4 }}>
-                            <TextField
-                                fullWidth size="small"
-                                placeholder="Buscar en YouTube..."
-                                value={query}
-                                onChange={(e) => setQuery(e.target.value)}
-                                onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-                            />
-                            <Button variant="contained" onClick={handleSearch}>Buscar</Button>
-                            <Button variant="outlined" onClick={() => { setQuery(''), fetchInitialVideos() }}><Clear /></Button>
-                        </Box>
-                        <Grid container spacing={3}>
-                            {videos.map((v: any) => (
-                                <Grid size={{ xs: 12, sm: 6, md: 4 }} key={v.id.videoId}>
-                                    <VideoCard
-                                        video={v}
-                                        onAction={() => addToFavorites(v)}
-                                        isFavPage={false}
-                                    />
-                                </Grid>
-                            ))}
-                        </Grid>
-                    </Box>
-                ) : (
-                    // FAVORITE VIDEOS
-                    <Box>
-                        <TextField
-                            fullWidth size="small" sx={{ mb: 4 }}
-                            placeholder="Buscar en mis favoritos..."
-                            onChange={(e) => setFavQuery(e.target.value)}
-                        />
-                        <Grid container spacing={3}>
-                            {filteredFavorites.map((v: any) => (
-                                <Grid size={{ xs: 12, sm: 6, md: 4 }} key={v._id}>
-                                    <VideoCard
-                                        video={v}
-                                        onAction={() => removeFromFavorites(v._id || v.id?.videoId || v.id)}
-                                        isFavPage={true}
-                                    />
-                                </Grid>
-                            ))}
-                        </Grid>
-                    </Box>
-                )}
-            </Container>
+            {/* CUSTOM  NAVBAR */}
+            <Navbar username={username} tabValue={tabValue} setTabValue={setTabValue} onLogout={handleLogout} />
+            {/* MAIN CONTENT */}
+            <Box component='main' sx={{ mt: 4, pb: 4 }}>
+                {/* CONTENT WRAPPER */}
+                <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'extend' }}>
+                    {/* CUSTOM SEARCH BAR */}
+                    <SearchBar
+                        // PLACEHOLDER
+                        placeholder={tabValue === 0 ? "Buscar en YouTube..." : "Buscar en Favoritos..."}
+                        // VALUE OF THE SEARCH BAR
+                        value={tabValue === 0 ? query : favQuery}
+                        onChange={tabValue === 0 ? setQuery : setFavQuery}
+                        // HANDLE SEARCH
+                        onSearch={tabValue === 0 ? handleSearch : () => { }}
+                        // HANDLE CLEAR
+                        onClear={() => { tabValue === 0 && setQuery(''); fetchInitialVideos(); tabValue === 1 && setFavQuery(''); }}
+                    />
+                    {/* VIDEO GRID */}
+                    <Grid container spacing={3}>
+                        {
+                            // SHOW POPULAR VIDEOS (TAB VALUE 0) OR FAVORITES (TAB VALUE 1)
+                            tabValue === 0 ?
+                                // SHOW POPULAR VIDEOS
+                                videos.map((v: any) => (
+                                    <Grid size={{ xs: 12, sm: 6, md: 4 }} key={v.id.videoId}>
+                                        <VideoCard video={v}
+                                            isFavorite={favorites.some((f: any) => f.id?.videoId === v.id.videoId)}
+                                            onToggleFavorite={toggleFavorite} />
+                                    </Grid>
+                                )) :
+                                // SHOW FAVORITES
+                                favorites.filter((f: any) => f.snippet.title.toLowerCase().includes(favQuery.toLowerCase())).map((v: any) => (
+                                    <Grid size={{ xs: 12, sm: 6, md: 4 }} key={v._id}>
+                                        <VideoCard video={v}
+                                            isFavorite={true}
+                                            onToggleFavorite={toggleFavorite} />
+                                    </Grid>
+                                ))
+                        }
+                    </Grid>
+                </Box>
+            </Box>
         </>
-    );
-};
-
-// COMPONENTE DE TARJETA REUTILIZABLE
-const VideoCard = ({ video, onAction, isFavPage }: any) => {
-
-    const handleWatchVideo = () => {
-        const videoId = typeof video.id === 'string' ? video.id : video.id?.videoId || video.videoId;
-
-        if (!videoId) {
-            alert("No se pudo encontrar el ID del video");
-            return;
-        }
-
-        alert("Estás saliendo de InnovaTube para ir a YouTube.com");
-        window.open(`https://www.youtube.com/watch?v=${videoId}`, '_blank');
-    };
-
-    return (
-        <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column', borderRadius: 2 }}>
-            <CardMedia
-                component="img"
-                height="160"
-                image={video.snippet.thumbnails.medium.url}
-                alt="thumbnail"
-            />
-            <CardContent sx={{ flexGrow: 1 }}>
-                {/* CARD TITLE */}
-                <Typography
-                    variant="subtitle1"
-                    color="primary"
-                    sx={{
-                        fontWeight: 'bold',
-                        display: '-webkit-box',
-                        WebkitLineClamp: 2,
-                        WebkitBoxOrient: 'vertical',
-                        overflow: 'hidden',
-                        height: '3em',
-                        lineHeight: '1.5em'
-                    }}
-                >
-                    {video.snippet.title}
-                </Typography>
-
-                {/* DESCRIPTION */}
-                <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    sx={{
-                        mt: 1,
-                        display: '-webkit-box',
-                        WebkitLineClamp: 3,
-                        WebkitBoxOrient: 'vertical',
-                        overflow: 'hidden',
-                        fontSize: '0.85rem'
-                    }}
-                >
-                    {video.snippet.description || "Sin descripción disponible."}
-                </Typography>
-            </CardContent>
-
-            <CardActions sx={{ justifyContent: 'space-between', px: 2, pb: 2 }}>
-                <Button
-                    startIcon={<PlayArrow />}
-                    size="small"
-                    onClick={handleWatchVideo}
-                >
-                    Ver Video
-                </Button>
-
-                <IconButton onClick={onAction}>
-                    {isFavPage ? (
-                        <Favorite sx={{ color: 'red' }} />
-                    ) : (
-                        <FavoriteBorder sx={{ color: 'gray' }} />
-                    )}
-                </IconButton>
-            </CardActions>
-        </Card>
     );
 };
 
