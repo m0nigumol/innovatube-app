@@ -6,7 +6,7 @@
 import axios from "axios";
 // CREATE INSTANCE OF AXIOS
 const Api = axios.create({
-    baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000/api",
+    baseURL: import.meta.env.VITE_API_URL || "https://innovatube-backend-zegg.onrender.com",
 });
 // INTERCEPT REQUESTS AND ADD TOKEN TO HEADERS FOR AUTH
 Api.interceptors.request.use((config) => {
