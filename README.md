@@ -1,8 +1,8 @@
 # InnovaTube
 
 > **Links del Proyecto:**
-> - 🌐 **Demo en Vivo:** [https://tu-frontend.onrender.com](https://innovatube-app.onrender.com)
-> - ⚙️ **API Endpoint:** [https://tu-backend.onrender.com](https://innovatube-backend-zegg.onrender.com)
+> - 🌐 **Demo en Vivo:** [Frontend App](https://innovatube-app.onrender.com)
+> - ⚙️ **API Endpoint:** [Backend API](https://innovatube-backend-zegg.onrender.com)
 
 InnovaTube es una aplicación web full-stack diseñada para explorar y gestionar videos de YouTube en una interfaz moderna y personalizada. Este proyecto fue desarrollado como parte de una prueba técnica, integrando soluciones de terceros y mejores prácticas de seguridad.
 
