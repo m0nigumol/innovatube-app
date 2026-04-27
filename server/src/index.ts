@@ -21,30 +21,20 @@ import favoriteRoutes from "./routes/favoriteRoutes";
 
 // LOAD ENV VARIABLES
 dotenv.config();
-
 // CONNECT TO DB
 connectDB();
-
 // CREATE EXPRESS APP
 const app = express();
-
-// CORS: ALLOW CROSS-ORIGIN REQUESTS (FROM FRONTEND)
-app.use(cors());
 // PARSE JSON BODIES (FROM FRONTEND)
 app.use(express.json());
-
 // ROUTES
-app.get('/', (req, res) => {
-    res.send("[ ✅ SUCESS ]: Welcome to Innovatube API !!!");
-});
+app.get('/', (req, res) => { res.send("[ ✅ SUCESS ]: Welcome to Innovatube API !!!"); });
 // USE CUSTOM ROUTES
 app.use('/api/auth', authRoutes);
 app.use('/api/videos', videoRoutes);
 app.use('/api/favorites', favoriteRoutes);
-
-
-// INITIALIZE SERVER
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-    console.log(`[ ✅ SUCCESS ]: Server is running on port ${PORT}`);
-});
+// START SERVER WITH CORS ALLOWED FROM FRONTEND
+app.use(cors({
+    origin: 'https://innovatube-app.onrender.com',
+    credentials: true
+}));
