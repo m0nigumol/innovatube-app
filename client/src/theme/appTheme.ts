@@ -101,7 +101,12 @@ export const appTheme = createTheme({
           '& .MuiOutlinedInput-root': {
             borderRadius: 40,
             backgroundColor: '#272727',
-            '& fieldset': { borderColor: '#1e1e1e' },
+            '& input:-webkit-autofill': {
+              WebkitBoxShadow: '0 0 0 100px #121212 inset',
+              WebkitTextFillColor: '#ffffff',
+              transition: 'background-color 5000s ease-in-out 0s',
+              borderRadius: 'inherit',
+            },
           },
         },
       },
